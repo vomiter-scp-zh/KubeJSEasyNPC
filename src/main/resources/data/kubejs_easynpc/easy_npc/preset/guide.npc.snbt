@@ -1,0 +1,29 @@
+{
+  PresetMetadata:{name:"KubeJS Guide",author:"vomiter",category:"KubeJS",version:"1.0.0",
+    description:"Demonstrates the KubeJS custom action bridge",entityTypeId:"easy_npc:humanoid",variantType:"STEVE"},
+  data:{
+    id:"easy_npc:humanoid",EasyNPCVersion:3,VariantType:"STEVE",
+    CustomName:'{"text":"KubeJS Guide"}',CustomNameVisible:1b,
+    PersistenceRequired:1b,Invulnerable:1b,
+    Status:{finalized:1b},SkinData:{Type:"DEFAULT"},
+    ActionData:{ActionEventSet:{ON_INTERACTION:[{Type:"OPEN_DEFAULT_DIALOG"}]}},
+    ObjectiveData:{ObjectiveDataSet:[{Type:"LOOK_AT_PLAYER"},{Type:"LOOK_AT_RESET"}]},
+    DialogData:{Type:"STANDARD",DialogDataSet:[{
+      Label:"default",Name:"KubeJS Guide",Texts:[{Text:"Choose an action to call your server script."}],
+      Buttons:[
+        {Label:"greet",Name:"Run KubeJS action",Actions:[
+          {Type:"CUSTOM",Cmd:"kubejs_easynpc:script example:greet hello"},
+          {Type:"CLOSE_DIALOG"}
+        ]},
+        {Label:"follow",Name:"Follow your owner",Actions:[
+          {Type:"CUSTOM",Cmd:"kubejs_easynpc:script example:follow"},
+          {Type:"CLOSE_DIALOG"}
+        ]},
+        {Label:"stop",Name:"Stop following",Actions:[
+          {Type:"CUSTOM",Cmd:"kubejs_easynpc:script example:stop"},
+          {Type:"CLOSE_DIALOG"}
+        ]}
+      ]
+    }]}
+  }
+}

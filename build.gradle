@@ -1,0 +1,73 @@
+// Based on KubeJS_Create_Automation master fd83cf5801d98073adc161bbe1b305f3a7bdc619.
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '6.0.36'
+}
+version = mod_version
+group = mod_group_id
+base { archivesName = mod_id }
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    withSourcesJar()
+}
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+    copyIdeResources = true
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            // Remap dependency refmaps (KubeJS / Easy NPC) in the named dev environment.
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', project.file('build/createSrgToMcp/output.srg').absolutePath
+            mods { "${mod_id}" { source sourceSets.main } }
+        }
+        client {}
+        server { args '--nogui' }
+    }
+}
+repositories {
+    maven { url = 'https://maven.architectury.dev'; content { includeGroup 'dev.architectury' } }
+    maven { url = 'https://maven.latvian.dev/releases'; content { includeGroup 'dev.latvian.mods' } }
+    maven { url = 'https://api.modrinth.com/maven'; content { includeGroup 'maven.modrinth' } }
+    maven { url "https://cursemaven.com"; content {includeGroup "curse.maven"}}
+}
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:${kubejs_version}")
+    implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
+    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+    implementation fg.deobf("curse.maven:easy-npc-config-ui-1214728:9310595")
+    implementation fg.deobf("curse.maven:easy-npc-core-1308987:9310585")
+    implementation fg.deobf("curse.maven:probejs-585406:5227399")
+}
+tasks.named('processResources', ProcessResources).configure {
+    def properties = [minecraft_version_range: minecraft_version_range,
+        forge_version_range: forge_version_range, loader_version_range: loader_version_range,
+        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+        mod_authors: mod_authors, mod_description: mod_description,
+        kubejs_version: kubejs_version, easy_npc_version: easy_npc_version]
+    inputs.properties properties
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) { expand properties }
+}
+tasks.named('jar', Jar).configure {
+    manifest { attributes([
+        'Specification-Title': mod_id,
+        'Specification-Vendor': mod_authors,
+        'Specification-Version': '1',
+        'Implementation-Title': project.name,
+        'Implementation-Version': mod_version,
+        'Implementation-Vendor': mod_authors]) }
+    finalizedBy 'reobfJar'
+}
+publishing {
+    publications { register('mavenJava', MavenPublication) { artifact jar; artifact sourcesJar } }
+    repositories { maven { url = layout.buildDirectory.dir('repo') } }
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+tasks.matching { it.name in ['runClient', 'runServer', 'runGameTestServer'] }.configureEach {
+    dependsOn 'createSrgToMcp'
+}

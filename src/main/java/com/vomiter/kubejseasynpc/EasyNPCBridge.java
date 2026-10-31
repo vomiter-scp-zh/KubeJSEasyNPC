@@ -22,7 +22,7 @@ import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 public final class EasyNPCBridge {
     private static boolean initialized;
@@ -79,7 +79,7 @@ public final class EasyNPCBridge {
             }
         });
 
-        ActionRegistry.register(new ResourceLocation(KubeJSEasyNPC.MOD_ID, "script"), new CustomActionExecutor() {
+        ActionRegistry.register(ResourceLocation.fromNamespaceAndPath(KubeJSEasyNPC.MOD_ID, "script"), new CustomActionExecutor() {
             @Override
             @SuppressWarnings("deprecation")
             public void execute(ActionDataEntry action, EasyNPC<?> npc, ServerPlayer player, List<String> args) {

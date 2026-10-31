@@ -4,14 +4,14 @@ import com.vomiter.kubejseasynpc.NPCHandle;
 import com.vomiter.kubejseasynpc.objective.EasyNPCObjectives;
 import com.vomiter.kubejseasynpc.objective.ScriptObjectiveBuilder;
 import de.markusbordihn.easynpc.data.objective.ObjectiveDataEntry;
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import java.util.function.BiFunction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 /** Registration window fired once by KubeJSPlugin.initStartup, after startup scripts load. */
-public final class RegisterObjectiveEventJS extends EventJS {
+public final class RegisterObjectiveEventJS implements KubeEvent {
     private boolean active = true;
 
     private RegisterObjectiveEventJS() {}

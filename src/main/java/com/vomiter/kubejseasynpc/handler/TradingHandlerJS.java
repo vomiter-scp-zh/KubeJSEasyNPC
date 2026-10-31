@@ -12,10 +12,12 @@ import de.markusbordihn.easynpc.data.trading.TradingType;
 import de.markusbordihn.easynpc.entity.easynpc.data.ActionEventDataCapable;
 import de.markusbordihn.easynpc.entity.easynpc.data.TradingDataCapable;
 import de.markusbordihn.easynpc.handler.TradingOfferHandler;
+import de.markusbordihn.easynpc.utils.TradingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -30,10 +32,13 @@ public final class TradingHandlerJS extends NPCComponent {
         if (data == null) throw new IllegalStateException("NPC does not support trading");
         return data;
     }
-    private static MerchantOffer copyOffer(MerchantOffer offer) {
-        return new MerchantOffer(offer.createTag());
+    // Use the full registry-aware codec to retain components, demand, uses and special prices.
+    private MerchantOffer copyOffer(MerchantOffer offer) {
+        var ops = npc.getServer().registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        var tag = MerchantOffer.CODEC.encodeStart(ops, offer).getOrThrow();
+        return MerchantOffer.CODEC.parse(ops, tag).getOrThrow();
     }
-    private static MerchantOffers copyOffers(TradingDataCapable<?> data) {
+    private MerchantOffers copyOffers(TradingDataCapable<?> data) {
         MerchantOffers offers = data.getTradingOffers();
         MerchantOffers copy = new MerchantOffers();
         if (offers != null) for (MerchantOffer offer : offers) copy.add(copyOffer(offer));
@@ -69,7 +74,8 @@ public final class TradingHandlerJS extends NPCComponent {
     }
     public MerchantOffer createOffer(ItemStack costA, ItemStack costB, ItemStack result,
                                      int maxUses, int xp, float priceMultiplier) {
-        return new MerchantOffer(costA.copy(), costB.copy(), result.copy(), maxUses, xp, priceMultiplier);
+        return new MerchantOffer(TradingUtils.getItemCost(costA.copy()),
+            TradingUtils.getOptionalItemCost(costB.copy()), result.copy(), maxUses, xp, priceMultiplier);
     }
     public List<MerchantOffer> getOffers() { return new ArrayList<>(copyOffers(trading())); }
     public MerchantOffer getOffer(int index) {

@@ -4,7 +4,7 @@ import com.vomiter.kubejseasynpc.NPCHandle;
 import de.markusbordihn.easynpc.data.action.ActionContext;
 import de.markusbordihn.easynpc.data.action.ActionEventType;
 import de.markusbordihn.easynpc.entity.easynpc.EasyNPC;
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.KubeEvent;
 import java.util.List;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 /** Notification events. Cancellation is deliberately not supported. */
-public class NPCEventJS<D> extends EventJS {
+public class NPCEventJS<D> implements KubeEvent {
     private final EasyNPC<?> source;
     private final ActionContext context;
     private final D details;

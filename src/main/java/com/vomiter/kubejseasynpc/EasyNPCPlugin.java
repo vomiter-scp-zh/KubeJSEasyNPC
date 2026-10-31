@@ -5,15 +5,16 @@ import com.vomiter.kubejseasynpc.event.EasyNPCStartupEvents;
 import com.vomiter.kubejseasynpc.event.RegisterObjectiveEventJS;
 import com.vomiter.kubejseasynpc.objective.ScriptGoalBuilder;
 import com.vomiter.kubejseasynpc.objective.ScriptObjectiveBuilder;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
 
-public class EasyNPCPlugin extends KubeJSPlugin {
+public class EasyNPCPlugin implements KubeJSPlugin {
     @Override
-    public void registerEvents() {
-        EasyNPCEvents.GROUP.register();
-        EasyNPCStartupEvents.GROUP.register();
+    public void registerEvents(EventGroupRegistry registry) {
+        registry.register(EasyNPCEvents.GROUP);
+        registry.register(EasyNPCStartupEvents.GROUP);
     }
 
     @Override
@@ -22,14 +23,14 @@ public class EasyNPCPlugin extends KubeJSPlugin {
     }
 
     @Override
-    public void registerBindings(BindingsEvent event) {
-        if (event.getType() == ScriptType.STARTUP) {
+    public void registerBindings(BindingRegistry event) {
+        if (event.type() == ScriptType.STARTUP) {
             event.add("ScriptObjectiveBuilder", ScriptObjectiveBuilder.class);
         }
-        if (event.getType() == ScriptType.STARTUP || event.getType() == ScriptType.SERVER) {
+        if (event.type() == ScriptType.STARTUP || event.type() == ScriptType.SERVER) {
             event.add("ScriptGoalBuilder", ScriptGoalBuilder.class);
         }
-        if (event.getType() == ScriptType.SERVER) {
+        if (event.type() == ScriptType.SERVER) {
             event.add("EasyNPC", EasyNPCBindings.class);
         }
     }
